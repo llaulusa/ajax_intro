@@ -1,5 +1,8 @@
 $(document).ready(function(){
 	var baseUrl = 'http://devpoint-ajax-example-server.herokuapp.com/api/v1/'
+	function addToList (id, name) {
+		return('<li><a class="user_item" href=' + id + '>' + name + '</a><br /><button>Edit</button> - <button class="user_delete">Delete</button></li>');
+	};
 
   $.ajax('http://devpoint-ajax-example-server.herokuapp.com/api/v1/users', {
   type: 'GET',
@@ -11,7 +14,7 @@ $(document).ready(function(){
         var user = data.users[i];
         // populate users_list element with each users first name
         // use the jquery append method on users_list
-        $('#users_list').append('<li><a class="user_item" href=' + user.id + '>' + user.first_name + '</a><br /><button>Edit</button> - <button class="user_delete">Delete</button></li>');
+        $('#users_list').append(addToList(user.id, user.first_name));
       }
     } else {
       $('#message_div').text('No users found. Please add one!').slideToggle();
@@ -54,11 +57,13 @@ $(document).ready(function(){
 
   $('#create_user_form').submit(function(e){
     e.preventDefault();
+    var formData = $(this).serializeArray()
     $.ajax(baseUrl + 'users', {
       type: 'POST',
-      data: {'user': {'first_name': 'Ladd', 'last_name': 'Laulusa', 'phone_number': '5205768184'}},
+      data: formData,
       success: function(data) {
-        console.log(data);
+        $('#users_list').append(addToList(data.user.id, data.user.first_name));
+        $('#create_user_form')[0].reset();
       },
       error: function(data) {
         console.log(data);
